@@ -1,10 +1,10 @@
 # Operating System Performance Analysis Tools
 
-A comprehensive suite of tools for analyzing and understanding operating system performance characteristics including context switching, scheduling, lock contention, virtual memory behavior, memory allocation performance, CPU cache behavior, and disk I/O performance.
+A comprehensive suite of tools for analyzing and understanding operating system performance characteristics including context switching, scheduling, lock contention, virtual memory behavior, memory allocation performance, CPU cache behavior, disk I/O performance, and network I/O performance.
 
 ## Overview
 
-This repository contains fourteen specialized tools for exploring different aspects of operating system performance:
+This repository contains sixteen specialized tools for exploring different aspects of operating system performance:
 
 1. **Context Switch Measurement (C)** - Measures the overhead of process context switching
 2. **Context Switch Measurement (C++)** - Enhanced version with multiple measurement methods
@@ -20,6 +20,8 @@ This repository contains fourteen specialized tools for exploring different aspe
 12. **CPU Cache Performance Analyzer (C++)** - Template-based cache analysis with modern C++ features
 13. **Disk I/O Performance Analyzer (C)** - Comprehensive disk I/O performance analysis and optimization
 14. **Disk I/O Performance Analyzer (C++)** - Template-based I/O analysis with modern C++ async features
+15. **Network I/O Benchmarker (C)** - Comprehensive network performance analysis and protocol comparison
+16. **Network I/O Benchmarker (C++)** - Modern network I/O testing with async patterns and advanced statistics
 
 ## Building All Tools
 
@@ -43,6 +45,8 @@ gcc -o cache_analyzer src/cache_analyzer.c -lpthread -lm
 g++ -std=c++17 -O2 -o cache_analyzer_cpp src/cache_analyzer_cpp.cpp -pthread
 gcc -o disk_io_analyzer src/disk_io_analyzer.c -lpthread -lm
 g++ -std=c++17 -O2 -o disk_io_analyzer_cpp src/disk_io_analyzer_cpp.cpp -pthread
+gcc -o network_io_benchmarker src/network_io_benchmarker.c -lpthread -lm
+g++ -std=c++17 -O2 -o network_io_benchmarker_cpp src/network_io_benchmarker_cpp.cpp -pthread
 ```
 
 ## Tool Descriptions
@@ -540,6 +544,125 @@ Modern C++ implementation with template-based I/O patterns and advanced async ca
 - **Thread Scaling** - Optimal thread count depends on storage type (SSD vs HDD)
 - **Latency Distribution** - 99th percentile often 10-100x higher than average
 
+### 15. Network I/O Benchmarker (C)
+
+Comprehensive analysis of network I/O performance characteristics and protocol comparison.
+
+**Usage:**
+```bash
+./network_io_benchmarker [options]
+  -m <mode>      Mode: client or server (default: run both)
+  -a <address>   Server address (default: 127.0.0.1)
+  -p <port>      Port number (default: 12345)
+  -P <protocol>  Protocol: tcp or udp (default: tcp)
+  -t <type>      Test type: throughput, latency, buffer, multiplexer, all
+  -s <size>      Message size in bytes (default: 1024)
+  -n <count>     Number of messages (default: 10000)
+  -d <duration>  Test duration in seconds (default: 10)
+  -T <threads>   Number of threads (default: 1)
+  -h             Show this help message
+```
+
+**Test Types:**
+- **Throughput Test** - TCP vs UDP maximum throughput measurement
+- **Latency Test** - Round-trip latency analysis with percentile distribution
+- **Buffer Size Optimization** - Socket buffer size impact on performance
+- **I/O Multiplexer Comparison** - select/poll/epoll/kqueue performance comparison
+- **Connection Scaling** - Multi-connection performance analysis
+
+**Key Features:**
+- Cross-platform I/O multiplexing (select/poll/epoll/kqueue)
+- TCP and UDP protocol support
+- Socket buffer size optimization testing
+- Real-time latency histogram analysis
+- Connection scaling and load testing
+- Multi-threaded client/server architecture
+
+**I/O Multiplexers:**
+- **select()** - Cross-platform, traditional multiplexing
+- **poll()** - Improved scalability over select
+- **epoll** (Linux) - High-performance event notification
+- **kqueue** (macOS/BSD) - Efficient kernel event queue
+
+**Example:**
+```bash
+# Run comprehensive network analysis
+./network_io_benchmarker -t all -P tcp
+
+# Test UDP vs TCP throughput
+./network_io_benchmarker -t throughput -P udp -s 8192 -d 15
+
+# Compare I/O multiplexers
+./network_io_benchmarker -t multiplexer -P tcp
+
+# Socket buffer optimization
+./network_io_benchmarker -t buffer -P tcp
+```
+
+### 16. Network I/O Benchmarker (C++ Version)
+
+Modern C++ implementation with async I/O patterns and advanced statistical analysis.
+
+**Usage:**
+```bash
+./network_io_benchmarker_cpp [options]
+  -a <address>   Server address (default: 127.0.0.1)
+  -p <port>      Port number (default: 12345)
+  -P <protocol>  Protocol: tcp or udp (default: tcp)
+  -t <type>      Test type: throughput, latency, buffer, multiplexer, all
+  -s <size>      Message size in bytes (default: 1024)
+  -n <count>     Number of messages (default: 10000)
+  -d <duration>  Test duration in seconds (default: 10)
+  -T <threads>   Number of threads (default: 1)
+  -v             Verbose output with percentiles
+  -h             Show this help message
+```
+
+**Enhanced Features:**
+- **RAII Socket Management** - Automatic resource cleanup and exception safety
+- **Template-based Protocol Selection** - Compile-time optimized networking code
+- **Modern C++ Concurrency** - std::future, std::async, and threading primitives
+- **Advanced Statistics** - Comprehensive percentile analysis and latency distribution
+- **Exception-safe Networking** - Robust error handling and resource management
+- **Type-safe Operations** - Template-based socket and protocol management
+
+**Network Analysis Types:**
+- **TCP Performance** - Connection-oriented reliable delivery testing
+- **UDP Performance** - Connectionless low-overhead performance measurement
+- **Protocol Comparison** - Direct TCP vs UDP performance analysis
+- **Buffer Size Impact** - Send/receive buffer optimization analysis
+- **Multiplexer Efficiency** - Event-driven I/O performance comparison
+
+**Advanced Features:**
+- **Async I/O Patterns** - Modern C++ asynchronous networking
+- **Connection Management** - Scalable connection handling with RAII
+- **Statistical Analysis** - Detailed latency percentiles (50th, 75th, 90th, 95th, 99th, 99.9th)
+- **Real-time Monitoring** - Live performance metrics and statistics
+- **Cross-platform Networking** - Unified API across Linux/macOS/BSD
+
+**Example:**
+```bash
+# Complete network performance suite with verbose statistics
+./network_io_benchmarker_cpp -t all -v
+
+# High-performance TCP throughput test
+./network_io_benchmarker_cpp -t throughput -P tcp -s 65536 -v
+
+# Detailed latency analysis with percentiles
+./network_io_benchmarker_cpp -t latency -P tcp -s 64 -v
+
+# Socket buffer size optimization for high throughput
+./network_io_benchmarker_cpp -t buffer -P tcp -v
+```
+
+**Key Performance Insights:**
+- **TCP vs UDP** - TCP typically 10-20% slower due to reliability overhead
+- **Buffer Size Impact** - Larger buffers improve throughput but increase latency
+- **I/O Multiplexer Performance** - epoll/kqueue 2-10x faster than select for many connections
+- **Connection Scaling** - Performance degrades significantly beyond optimal connection count
+- **Message Size Effect** - Larger messages improve efficiency but increase memory usage
+- **Protocol Overhead** - TCP header (20+ bytes) vs UDP header (8 bytes) impact
+
 ## Performance Insights
 
 ### Context Switching
@@ -592,6 +715,16 @@ Modern C++ implementation with template-based I/O patterns and advanced async ca
 - Queue depth: Higher queue depth improves SSD performance
 - Thread scaling: 2-16 threads optimal for most storage devices
 - Latency distribution: 99th percentile often 10-100x average
+
+### Network I/O Performance
+- TCP throughput: 100-10000 MB/s typical on modern networks
+- UDP throughput: 10-20% higher than TCP due to lower overhead
+- Latency: LAN ~0.1-1ms, WAN ~10-200ms, varies by distance
+- Buffer size impact: Larger buffers improve throughput, increase latency
+- I/O multiplexer scaling: epoll/kqueue handle 10K+ connections efficiently
+- Connection overhead: TCP setup/teardown costs 2-3 RTTs
+- Protocol overhead: TCP 20+ bytes vs UDP 8 bytes per packet
+- Congestion control: TCP adapts to network conditions automatically
 
 ## System Requirements
 
