@@ -4,15 +4,18 @@ A comprehensive suite of tools for analyzing and understanding operating system 
 
 ## Overview
 
-This repository contains seven specialized tools for exploring different aspects of operating system performance:
+This repository contains ten specialized tools for exploring different aspects of operating system performance:
 
-1. **Context Switch Measurement** - Measures the overhead of process context switching
-2. **Scheduler Fairness Analyzer** - Tests how the OS scheduler distributes CPU time
-3. **Lock Contention Visualizer** - Analyzes synchronization primitive performance
-4. **Virtual Memory Explorer (C)** - Deep dive into VM subsystem behavior
-5. **Virtual Memory Explorer (C++)** - Modern C++ implementation with enhanced features
-6. **Memory Allocator Benchmarker (C)** - Comprehensive malloc/free performance analysis
-7. **Memory Allocator Benchmarker (C++)** - Advanced allocator testing with STL and custom allocators
+1. **Context Switch Measurement (C)** - Measures the overhead of process context switching
+2. **Context Switch Measurement (C++)** - Enhanced version with multiple measurement methods
+3. **Scheduler Fairness Analyzer (C)** - Tests how the OS scheduler distributes CPU time
+4. **Scheduler Fairness Analyzer (C++)** - Advanced scheduler analysis with templates and STL
+5. **Lock Contention Visualizer (C)** - Analyzes synchronization primitive performance
+6. **Lock Contention Visualizer (C++)** - Modern lock analysis with custom lock types and real-time visualization
+7. **Virtual Memory Explorer (C)** - Deep dive into VM subsystem behavior
+8. **Virtual Memory Explorer (C++)** - Modern C++ implementation with enhanced features
+9. **Memory Allocator Benchmarker (C)** - Comprehensive malloc/free performance analysis
+10. **Memory Allocator Benchmarker (C++)** - Advanced allocator testing with STL and custom allocators
 
 ## Building All Tools
 
@@ -29,6 +32,9 @@ gcc -o vm_explorer src/vm_explorer.c -lm
 g++ -std=c++17 -O2 -o vm_explorer_cpp src/vm_explorer.cpp -pthread
 gcc -o memory_allocator src/memory_allocator_benchmarker.c -lpthread -lm
 g++ -std=c++17 -O2 -o memory_allocator_cpp src/memory_allocator_benchmarker.cpp -pthread
+g++ -std=c++17 -O2 -o context_switch_cpp src/context_switch_cpp.cpp -pthread
+g++ -std=c++17 -O2 -o scheduler_analyzer_cpp src/scheduler_analyzer_cpp.cpp -pthread  
+g++ -std=c++17 -O2 -o lock_visualizer_cpp src/lock_visualizer_cpp.cpp -pthread
 ```
 
 ## Tool Descriptions
@@ -223,6 +229,122 @@ Advanced C++ implementation with additional allocator testing capabilities.
 
 # Full benchmark suite
 ./memory_allocator_cpp -t all
+```
+
+### 8. Context Switch Measurement (C++ Version)
+
+Enhanced C++ implementation with multiple measurement methods and advanced statistics.
+
+**Usage:**
+```bash
+./context_switch_cpp [options]
+  -n <count>    Number of iterations (default: 1000)
+  -v            Verbose output with detailed statistics
+  -h            Show this help message
+```
+
+**Measurement Methods:**
+- **Pipe-based IPC** - Traditional process context switch measurement
+- **Shared Memory** - Low-overhead synchronization method
+- **Thread Switching** - Measures thread context switch overhead
+
+**Enhanced Features:**
+- RAII-based resource management
+- Statistical analysis with percentiles
+- Multiple measurement methods comparison
+- Histogram visualization of timing distribution
+
+**Example:**
+```bash
+# Quick measurement with default settings
+./context_switch_cpp
+
+# Detailed analysis with verbose output
+./context_switch_cpp -n 5000 -v
+```
+
+### 9. Scheduler Fairness Analyzer (C++ Version)
+
+Advanced scheduler analysis using modern C++ features and comprehensive workload types.
+
+**Usage:**
+```bash
+./scheduler_analyzer_cpp [options]
+  -d <seconds>  Duration of test (default: 10)
+  -t <threads>  Number of threads (default: 4)
+  -n            Enable nice values for priority testing
+  -v            Verbose output with detailed statistics
+  -h            Show this help message
+```
+
+**Workload Types:**
+- **CPU-intensive** - Mathematical computations
+- **I/O-intensive** - Sleep-based I/O simulation
+- **Mixed** - Combination of CPU and I/O work
+- **Memory-intensive** - Large memory operations with random access
+
+**Enhanced Features:**
+- Template-based workload generators
+- STL containers for statistics
+- Smart pointer memory management
+- Advanced fairness metrics (Jain's Index, Coefficient of Variation)
+
+**Example:**
+```bash
+# Standard fairness test
+./scheduler_analyzer_cpp -d 10 -t 8
+
+# Priority testing with nice values
+./scheduler_analyzer_cpp -d 15 -t 12 -n -v
+```
+
+### 10. Lock Contention Visualizer (C++ Version)
+
+Modern lock analysis with custom lock implementations and real-time monitoring.
+
+**Usage:**
+```bash
+./lock_visualizer_cpp [options]
+  -t <threads>  Number of threads (default: 8)
+  -d <seconds>  Duration of test (default: 10)
+  -l <type>     Lock type: mutex, recursive, shared, spin, adaptive
+  -w <pattern>  Workload: balanced, read, write, thunder, random, bursty
+  -z            Enable real-time visualization
+  -h            Show this help message
+```
+
+**Lock Types:**
+- **std::mutex** - Standard mutex
+- **std::recursive_mutex** - Recursive locking
+- **std::shared_mutex** - Reader-writer lock
+- **SpinLock** - Custom spinlock implementation
+- **AdaptiveMutex** - Hybrid spin-then-block mutex
+
+**Workload Patterns:**
+- **Balanced** - 50% read, 50% write operations
+- **Read-heavy** - 80% read, 20% write operations
+- **Write-heavy** - 20% read, 80% write operations
+- **Thundering herd** - High contention scenario
+- **Random** - Variable access patterns
+- **Bursty** - Periodic high activity
+
+**Enhanced Features:**
+- Real-time contention monitoring
+- Custom lock type implementations
+- Advanced statistics with percentiles
+- Performance recommendations
+- Type-safe template-based design
+
+**Example:**
+```bash
+# Test shared mutex with read-heavy workload
+./lock_visualizer_cpp -l shared -w read -z
+
+# High contention spinlock test
+./lock_visualizer_cpp -l spin -w thunder -t 16
+
+# Adaptive mutex comparison
+./lock_visualizer_cpp -l adaptive -d 20 -v
 ```
 
 ## Performance Insights
