@@ -1,10 +1,10 @@
 # Operating System Performance Analysis Tools
 
-A comprehensive suite of tools for analyzing and understanding operating system performance characteristics including context switching, scheduling, lock contention, virtual memory behavior, memory allocation performance, and CPU cache behavior.
+A comprehensive suite of tools for analyzing and understanding operating system performance characteristics including context switching, scheduling, lock contention, virtual memory behavior, memory allocation performance, CPU cache behavior, and disk I/O performance.
 
 ## Overview
 
-This repository contains twelve specialized tools for exploring different aspects of operating system performance:
+This repository contains fourteen specialized tools for exploring different aspects of operating system performance:
 
 1. **Context Switch Measurement (C)** - Measures the overhead of process context switching
 2. **Context Switch Measurement (C++)** - Enhanced version with multiple measurement methods
@@ -18,6 +18,8 @@ This repository contains twelve specialized tools for exploring different aspect
 10. **Memory Allocator Benchmarker (C++)** - Advanced allocator testing with STL and custom allocators
 11. **CPU Cache Performance Analyzer (C)** - Comprehensive CPU cache hierarchy and performance analysis
 12. **CPU Cache Performance Analyzer (C++)** - Template-based cache analysis with modern C++ features
+13. **Disk I/O Performance Analyzer (C)** - Comprehensive disk I/O performance analysis and optimization
+14. **Disk I/O Performance Analyzer (C++)** - Template-based I/O analysis with modern C++ async features
 
 ## Building All Tools
 
@@ -39,6 +41,8 @@ g++ -std=c++17 -O2 -o scheduler_analyzer_cpp src/scheduler_analyzer_cpp.cpp -pth
 g++ -std=c++17 -O2 -o lock_visualizer_cpp src/lock_visualizer_cpp.cpp -pthread
 gcc -o cache_analyzer src/cache_analyzer.c -lpthread -lm
 g++ -std=c++17 -O2 -o cache_analyzer_cpp src/cache_analyzer_cpp.cpp -pthread
+gcc -o disk_io_analyzer src/disk_io_analyzer.c -lpthread -lm
+g++ -std=c++17 -O2 -o disk_io_analyzer_cpp src/disk_io_analyzer_cpp.cpp -pthread
 ```
 
 ## Tool Descriptions
@@ -438,6 +442,104 @@ Modern C++ implementation with template-based access patterns and enhanced safet
 - **Cache Line Size** - 64 bytes on most modern CPUs
 - **Prefetcher Effectiveness** - Works well for strides ≤64 bytes
 
+### 13. Disk I/O Performance Analyzer (C)
+
+Comprehensive analysis of disk I/O performance characteristics and optimization opportunities.
+
+**Usage:**
+```bash
+./disk_io_analyzer [options]
+  -f <filename>  Test file path (default: ./diskio_test)
+  -s <size>      File size in MB (default: 100)
+  -t <type>      Test type: pattern, block, sync, modes, all (default: all)
+  -T <threads>   Number of threads (default: 4)
+  -d <duration>  Test duration in seconds (default: 10)
+  -h             Show this help message
+```
+
+**Test Types:**
+- **Pattern Analysis** - Sequential vs random read/write performance comparison
+- **Block Size Analysis** - Optimal block size determination for different workloads
+- **Sync Overhead Analysis** - fsync() and fdatasync() performance impact measurement
+- **I/O Mode Comparison** - Buffered vs Direct vs Synchronous I/O performance
+- **Multi-threading Scaling** - I/O performance scaling with thread count
+
+**Key Features:**
+- Cross-platform compatibility (Linux/macOS)
+- Multiple access patterns (sequential, random, mixed)
+- Various I/O modes (buffered, direct, synchronous)
+- Thread synchronization with barriers
+- Detailed latency histogram analysis
+- Real-time throughput and IOPS measurement
+
+**Example:**
+```bash
+# Run comprehensive I/O analysis
+./disk_io_analyzer -t all -s 500 -T 8
+
+# Test different block sizes for optimization
+./disk_io_analyzer -t block -s 200 -d 15
+
+# Measure sync overhead impact
+./disk_io_analyzer -t sync -T 2 -d 10
+```
+
+### 14. Disk I/O Performance Analyzer (C++ Version)
+
+Modern C++ implementation with template-based I/O patterns and advanced async capabilities.
+
+**Usage:**
+```bash
+./disk_io_analyzer_cpp [options]
+  -f <filename>  Test file path (default: ./diskio_test)
+  -s <size>      File size in MB (default: 100)
+  -t <type>      Test type: pattern, block, sync, modes, all (default: all)
+  -T <threads>   Number of threads (default: 4)
+  -d <duration>  Test duration in seconds (default: 10)
+  -v             Verbose output with detailed statistics
+  -h             Show this help message
+```
+
+**Enhanced Features:**
+- **Template-based I/O Patterns** - Compile-time optimized I/O pattern execution
+- **RAII Resource Management** - Automatic cleanup and exception safety
+- **Aligned Memory Allocators** - Optimal memory alignment for direct I/O
+- **Modern C++ Concurrency** - std::barrier, std::future, and std::async
+- **Advanced Statistics** - Percentile analysis and detailed latency metrics
+- **Type-safe Operations** - Template-based pattern selection and execution
+
+**I/O Pattern Types:**
+- **SequentialRead** - Linear read access for maximum throughput
+- **SequentialWrite** - Linear write access with data verification
+- **RandomRead** - Random access patterns to test seek performance
+- **RandomWrite** - Random write operations with cache bypass
+- **Mixed** - Realistic workload simulation (67% read, 33% write)
+
+**I/O Mode Analysis:**
+- **Buffered I/O** - Standard OS buffer cache utilization
+- **Direct I/O** - Bypass OS cache for raw device performance
+- **Synchronous I/O** - Force immediate disk writes for durability testing
+
+**Example:**
+```bash
+# Complete I/O performance suite with verbose output
+./disk_io_analyzer_cpp -t all -v -s 1000
+
+# Pattern analysis with large file
+./disk_io_analyzer_cpp -t pattern -s 2000 -T 8 -v
+
+# Block size optimization for SSD/NVMe
+./disk_io_analyzer_cpp -t block -T 16 -d 20
+```
+
+**Key Performance Insights:**
+- **Sequential I/O** - Typically 10-50x faster than random I/O
+- **Block Size Impact** - Larger blocks reduce syscall overhead but increase latency
+- **Direct I/O** - 20-50% faster for large sequential operations
+- **Sync Overhead** - Can reduce throughput by 10-100x depending on device
+- **Thread Scaling** - Optimal thread count depends on storage type (SSD vs HDD)
+- **Latency Distribution** - 99th percentile often 10-100x higher than average
+
 ## Performance Insights
 
 ### Context Switching
@@ -481,6 +583,16 @@ Modern C++ implementation with template-based access patterns and enhanced safet
 - Random access patterns stress cache hierarchy most
 - Cache-friendly data structures critical for performance
 
+### Disk I/O Performance
+- Sequential I/O: 100-3000 MB/s typical throughput (SSD/NVMe)
+- Random I/O: 10-50x slower than sequential, especially on HDDs
+- Block size impact: 4KB-1MB optimal depending on workload
+- Direct I/O: 20-50% faster for large sequential operations
+- Sync overhead: fsync() can reduce throughput by 10-100x
+- Queue depth: Higher queue depth improves SSD performance
+- Thread scaling: 2-16 threads optimal for most storage devices
+- Latency distribution: 99th percentile often 10-100x average
+
 ## System Requirements
 
 - POSIX-compliant OS (Linux, macOS, BSD)
@@ -496,6 +608,7 @@ Modern C++ implementation with template-based access patterns and enhanced safet
    - Optimize lock strategies
    - Reduce page faults
    - Minimize context switches
+   - Optimize I/O patterns and block sizes
 
 2. **System Analysis**
    - Understand OS overhead
@@ -550,6 +663,15 @@ Based on findings from these tools:
    - Group frequently accessed data together
    - Consider cache-oblivious algorithms
    - Use prefetch hints for predictable patterns
+
+7. **Disk I/O Optimization**
+   - Use sequential access patterns when possible
+   - Choose optimal block sizes for your workload
+   - Consider direct I/O for large sequential operations
+   - Minimize fsync() calls and use async I/O
+   - Use appropriate queue depths for your storage
+   - Align I/O operations to device block boundaries
+   - Batch small I/O operations together
 
 ## Contributing
 

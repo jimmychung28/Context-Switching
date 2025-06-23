@@ -7,7 +7,7 @@ CXXFLAGS = -std=c++17 -Wall -Wextra -O2
 LDFLAGS = -lpthread -lm
 
 # Binaries
-BINARIES = context_switch_macos scheduler_analyzer lock_visualizer vm_explorer vm_explorer_cpp memory_allocator memory_allocator_cpp context_switch_cpp scheduler_analyzer_cpp lock_visualizer_cpp cache_analyzer cache_analyzer_cpp
+BINARIES = context_switch_macos scheduler_analyzer lock_visualizer vm_explorer vm_explorer_cpp memory_allocator memory_allocator_cpp context_switch_cpp scheduler_analyzer_cpp lock_visualizer_cpp cache_analyzer cache_analyzer_cpp disk_io_analyzer disk_io_analyzer_cpp
 
 .PHONY: all clean
 
@@ -61,12 +61,21 @@ cache_analyzer: src/cache_analyzer.c
 cache_analyzer_cpp: src/cache_analyzer_cpp.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $< -pthread
 
+# Disk I/O analyzer (C version)
+disk_io_analyzer: src/disk_io_analyzer.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+
+# Disk I/O analyzer (C++ version)
+disk_io_analyzer_cpp: src/disk_io_analyzer_cpp.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $< -pthread
+
 # Linux-specific context switch measurement
 context_switch: src/Cost\ of\ Context\ Switching.c
 	$(CC) $(CFLAGS) -o $@ "$<" -lrt
 
 clean:
 	rm -f $(BINARIES) context_switch
+	rm -f diskio_test diskio_test.*
 
 install: all
 	@echo "Built tools:"
@@ -85,6 +94,8 @@ install: all
 	@echo "  ./lock_visualizer_cpp -l shared -w read -z"
 	@echo "  ./cache_analyzer -t all -T 4"
 	@echo "  ./cache_analyzer_cpp -t hierarchy -v"
+	@echo "  ./disk_io_analyzer -t all -T 4"
+	@echo "  ./disk_io_analyzer_cpp -t pattern -v"
 
 help:
 	@echo "Available targets:"
@@ -106,3 +117,5 @@ help:
 	@echo "  lock_visualizer_cpp   - Lock contention analysis (C++)"
 	@echo "  cache_analyzer        - CPU cache performance analysis (C)"
 	@echo "  cache_analyzer_cpp    - CPU cache performance analysis (C++)"
+	@echo "  disk_io_analyzer      - Disk I/O performance analysis (C)"
+	@echo "  disk_io_analyzer_cpp  - Disk I/O performance analysis (C++)"
