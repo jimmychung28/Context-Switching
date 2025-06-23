@@ -1,16 +1,18 @@
 # Operating System Performance Analysis Tools
 
-A comprehensive suite of tools for analyzing and understanding operating system performance characteristics including context switching, scheduling, lock contention, and virtual memory behavior.
+A comprehensive suite of tools for analyzing and understanding operating system performance characteristics including context switching, scheduling, lock contention, virtual memory behavior, and memory allocation performance.
 
 ## Overview
 
-This repository contains five specialized tools for exploring different aspects of operating system performance:
+This repository contains seven specialized tools for exploring different aspects of operating system performance:
 
 1. **Context Switch Measurement** - Measures the overhead of process context switching
 2. **Scheduler Fairness Analyzer** - Tests how the OS scheduler distributes CPU time
 3. **Lock Contention Visualizer** - Analyzes synchronization primitive performance
 4. **Virtual Memory Explorer (C)** - Deep dive into VM subsystem behavior
 5. **Virtual Memory Explorer (C++)** - Modern C++ implementation with enhanced features
+6. **Memory Allocator Benchmarker (C)** - Comprehensive malloc/free performance analysis
+7. **Memory Allocator Benchmarker (C++)** - Advanced allocator testing with STL and custom allocators
 
 ## Building All Tools
 
@@ -25,6 +27,8 @@ gcc -o scheduler_analyzer src/scheduler_analyzer.c -lpthread -lm
 gcc -o lock_visualizer src/lock_contention_visualizer.c -lpthread -lm
 gcc -o vm_explorer src/vm_explorer.c -lm
 g++ -std=c++17 -O2 -o vm_explorer_cpp src/vm_explorer.cpp -pthread
+gcc -o memory_allocator src/memory_allocator_benchmarker.c -lpthread -lm
+g++ -std=c++17 -O2 -o memory_allocator_cpp src/memory_allocator_benchmarker.cpp -pthread
 ```
 
 ## Tool Descriptions
@@ -150,6 +154,77 @@ Modern C++ implementation with enhanced safety and features.
 ./vm_explorer_cpp -t all -s 256
 ```
 
+### 6. Memory Allocator Benchmarker (C)
+
+Comprehensive analysis of dynamic memory allocation performance.
+
+**Usage:**
+```bash
+./memory_allocator [options]
+  -t <type>     Test type: speed, frag, scale, all
+  -p <pattern>  Allocation pattern: seq, rand, exp, bimodal, real
+  -s <size>     Min allocation size (default: 8)
+  -S <size>     Max allocation size (default: 8192)
+  -n <count>    Number of iterations (default: 1000)
+```
+
+**Test Types:**
+- **Speed Test** - Measures malloc/free performance
+- **Fragmentation Analysis** - Tracks memory fragmentation over time
+- **Scalability Test** - Multi-threaded allocation performance
+- **Pattern Analysis** - Different allocation size distributions
+
+**Key Features:**
+- Real-time performance statistics
+- Memory fragmentation scoring
+- Thread scalability analysis
+- Allocation/free time histograms
+- Peak memory tracking
+
+**Example:**
+```bash
+# Run all tests with realistic pattern
+./memory_allocator -t all
+
+# Test fragmentation with specific sizes
+./memory_allocator -t frag -s 64 -S 4096
+
+# Scalability test with random pattern
+./memory_allocator -t scale -p rand
+```
+
+### 7. Memory Allocator Benchmarker (C++ Version)
+
+Advanced C++ implementation with additional allocator testing capabilities.
+
+**Usage:**
+```bash
+./memory_allocator_cpp [options]
+  -t <type>     Test type: speed, frag, scale, container, custom, all
+  -p <pattern>  Allocation pattern: seq, rand, exp, bimodal, real
+  -s <size>     Min allocation size (default: 8)
+  -S <size>     Max allocation size (default: 8192)
+  -n <count>    Number of iterations (default: 1000)
+```
+
+**Additional Features:**
+- **STL Container Tests** - Benchmarks vector, map, unordered_map allocations
+- **Custom Allocator Tests** - Compares standard, aligned, and PMR allocators
+- **Smart Pointer Usage** - RAII-based memory management
+- **Percentile Statistics** - 50th, 90th, 99th percentile measurements
+
+**Example:**
+```bash
+# Test STL container allocations
+./memory_allocator_cpp -t container
+
+# Compare custom allocators
+./memory_allocator_cpp -t custom
+
+# Full benchmark suite
+./memory_allocator_cpp -t all
+```
+
 ## Performance Insights
 
 ### Context Switching
@@ -174,6 +249,13 @@ Modern C++ implementation with enhanced safety and features.
 - Page faults cost 1-50 microseconds each
 - Huge pages provide 10-30% speedup for large data
 - COW makes fork() nearly free until writes occur
+
+### Memory Allocation
+- malloc/free typically 0.1-1 microsecond per operation
+- Fragmentation can increase RSS by 20-50%
+- Multi-threaded scaling depends on allocator design
+- Custom allocators can provide 2-5x speedup for specific patterns
+- STL containers benefit from reserve() and PMR allocators
 
 ## System Requirements
 
@@ -229,6 +311,13 @@ Based on findings from these tools:
    - Use CPU affinity for cache locality
    - Avoid oversubscription
    - Profile thread behavior
+
+5. **Memory Allocator Optimization**
+   - Use appropriate allocation patterns
+   - Consider custom allocators for hot paths
+   - Pre-allocate when possible
+   - Monitor fragmentation levels
+   - Use memory pools for fixed-size allocations
 
 ## Contributing
 
