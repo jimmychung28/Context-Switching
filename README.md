@@ -1,10 +1,10 @@
 # Operating System Performance Analysis Tools
 
-A comprehensive suite of tools for analyzing and understanding operating system performance characteristics including context switching, scheduling, lock contention, virtual memory behavior, and memory allocation performance.
+A comprehensive suite of tools for analyzing and understanding operating system performance characteristics including context switching, scheduling, lock contention, virtual memory behavior, memory allocation performance, and CPU cache behavior.
 
 ## Overview
 
-This repository contains ten specialized tools for exploring different aspects of operating system performance:
+This repository contains twelve specialized tools for exploring different aspects of operating system performance:
 
 1. **Context Switch Measurement (C)** - Measures the overhead of process context switching
 2. **Context Switch Measurement (C++)** - Enhanced version with multiple measurement methods
@@ -16,6 +16,8 @@ This repository contains ten specialized tools for exploring different aspects o
 8. **Virtual Memory Explorer (C++)** - Modern C++ implementation with enhanced features
 9. **Memory Allocator Benchmarker (C)** - Comprehensive malloc/free performance analysis
 10. **Memory Allocator Benchmarker (C++)** - Advanced allocator testing with STL and custom allocators
+11. **CPU Cache Performance Analyzer (C)** - Comprehensive CPU cache hierarchy and performance analysis
+12. **CPU Cache Performance Analyzer (C++)** - Template-based cache analysis with modern C++ features
 
 ## Building All Tools
 
@@ -35,6 +37,8 @@ g++ -std=c++17 -O2 -o memory_allocator_cpp src/memory_allocator_benchmarker.cpp 
 g++ -std=c++17 -O2 -o context_switch_cpp src/context_switch_cpp.cpp -pthread
 g++ -std=c++17 -O2 -o scheduler_analyzer_cpp src/scheduler_analyzer_cpp.cpp -pthread  
 g++ -std=c++17 -O2 -o lock_visualizer_cpp src/lock_visualizer_cpp.cpp -pthread
+gcc -o cache_analyzer src/cache_analyzer.c -lpthread -lm
+g++ -std=c++17 -O2 -o cache_analyzer_cpp src/cache_analyzer_cpp.cpp -pthread
 ```
 
 ## Tool Descriptions
@@ -347,6 +351,93 @@ Modern lock analysis with custom lock implementations and real-time monitoring.
 ./lock_visualizer_cpp -l adaptive -d 20 -v
 ```
 
+### 11. CPU Cache Performance Analyzer (C)
+
+Comprehensive analysis of CPU cache hierarchy performance and cache-related bottlenecks.
+
+**Usage:**
+```bash
+./cache_analyzer [options]
+  -t <type>     Test type: hierarchy, false_sharing, bouncing, prefetcher, all
+  -T <threads>  Number of threads (default: 4)
+  -v            Verbose output with system information
+  -h            Show this help message
+```
+
+**Test Types:**
+- **Cache Hierarchy Analysis** - Tests L1, L2, L3 cache performance with different access patterns
+- **False Sharing Detection** - Compares cache-friendly vs false sharing scenarios
+- **Cache Line Bouncing** - Analyzes cache line bouncing between CPU cores
+- **Hardware Prefetcher Analysis** - Tests prefetcher effectiveness with different stride patterns
+
+**Key Features:**
+- Multiple access patterns (sequential, random, stride, pointer chase)
+- Cross-platform support (Linux/macOS)
+- Thread CPU affinity control
+- Detailed performance metrics with cache hit rate estimates
+- Real-time contention analysis
+
+**Example:**
+```bash
+# Run all cache tests with 8 threads
+./cache_analyzer -t all -T 8
+
+# Test cache hierarchy with verbose output
+./cache_analyzer -t hierarchy -v
+
+# False sharing analysis with 4 threads
+./cache_analyzer -t false_sharing -T 4
+```
+
+### 12. CPU Cache Performance Analyzer (C++ Version)
+
+Modern C++ implementation with template-based access patterns and enhanced safety features.
+
+**Usage:**
+```bash
+./cache_analyzer_cpp [options]
+  -t <type>     Test type: hierarchy, false_sharing, bouncing, prefetcher, all
+  -T <threads>  Number of threads (default: 4)
+  -v            Verbose output with detailed system information
+  -h            Show this help message
+```
+
+**Enhanced Features:**
+- **Template-based Access Patterns** - Type-safe, compile-time optimized access patterns
+- **RAII Memory Management** - Automatic resource cleanup and exception safety
+- **Aligned Memory Allocators** - Cache-line aligned memory allocation for optimal performance
+- **STL Integration** - Modern C++ containers and algorithms
+- **Advanced Statistics** - Comprehensive performance metrics and analysis
+
+**Access Pattern Types:**
+- **Sequential** - Linear memory access for maximum cache efficiency
+- **Random** - Random access patterns to stress cache hierarchy
+- **Stride** - Configurable stride patterns to test prefetcher limits
+- **Pointer Chase** - Linked list traversal to defeat prefetchers
+- **False Sharing** - Demonstrates false sharing performance impact
+- **Cache Friendly** - Optimized access patterns for comparison
+
+**Example:**
+```bash
+# Complete cache analysis suite
+./cache_analyzer_cpp -t all -v
+
+# Cache hierarchy test with detailed metrics
+./cache_analyzer_cpp -t hierarchy -T 8 -v
+
+# Hardware prefetcher effectiveness analysis
+./cache_analyzer_cpp -t prefetcher
+```
+
+**Key Insights:**
+- **L1 Cache** - Typically 32KB, ~1 cycle access time
+- **L2 Cache** - Usually 256KB-1MB, ~3-10 cycles
+- **L3 Cache** - Often 8-32MB, ~10-50 cycles
+- **Memory Access** - 100-300 cycles, major performance impact
+- **False Sharing** - Can reduce performance by 2-10x
+- **Cache Line Size** - 64 bytes on most modern CPUs
+- **Prefetcher Effectiveness** - Works well for strides ≤64 bytes
+
 ## Performance Insights
 
 ### Context Switching
@@ -378,6 +469,17 @@ Modern lock analysis with custom lock implementations and real-time monitoring.
 - Multi-threaded scaling depends on allocator design
 - Custom allocators can provide 2-5x speedup for specific patterns
 - STL containers benefit from reserve() and PMR allocators
+
+### CPU Cache Performance
+- L1 cache hits: ~1 cycle latency, highest performance
+- L2 cache hits: ~3-10 cycles, good performance
+- L3 cache hits: ~10-50 cycles, moderate performance
+- Memory access: ~100-300 cycles, major bottleneck
+- Cache line size: 64 bytes on most modern processors
+- False sharing can reduce performance by 2-10x
+- Sequential access patterns optimize prefetcher effectiveness
+- Random access patterns stress cache hierarchy most
+- Cache-friendly data structures critical for performance
 
 ## System Requirements
 
@@ -440,6 +542,14 @@ Based on findings from these tools:
    - Pre-allocate when possible
    - Monitor fragmentation levels
    - Use memory pools for fixed-size allocations
+
+6. **CPU Cache Optimization**
+   - Structure data for cache line alignment
+   - Minimize false sharing between threads
+   - Prefer sequential over random access patterns
+   - Group frequently accessed data together
+   - Consider cache-oblivious algorithms
+   - Use prefetch hints for predictable patterns
 
 ## Contributing
 
