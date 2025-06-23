@@ -7,7 +7,7 @@ CXXFLAGS = -std=c++17 -Wall -Wextra -O2
 LDFLAGS = -lpthread -lm
 
 # Binaries
-BINARIES = context_switch_macos scheduler_analyzer lock_visualizer vm_explorer vm_explorer_cpp
+BINARIES = context_switch_macos scheduler_analyzer lock_visualizer vm_explorer vm_explorer_cpp memory_allocator memory_allocator_cpp
 
 .PHONY: all clean
 
@@ -33,6 +33,14 @@ vm_explorer: src/vm_explorer.c
 vm_explorer_cpp: src/vm_explorer.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $< -pthread
 
+# Memory allocator benchmarker
+memory_allocator: src/memory_allocator_benchmarker.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+
+# Memory allocator benchmarker (C++ version)
+memory_allocator_cpp: src/memory_allocator_benchmarker.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $< -pthread
+
 # Linux-specific context switch measurement
 context_switch: src/Cost\ of\ Context\ Switching.c
 	$(CC) $(CFLAGS) -o $@ "$<" -lrt
@@ -50,6 +58,8 @@ install: all
 	@echo "  ./lock_visualizer -t 8 -l mutex"
 	@echo "  ./vm_explorer -t all"
 	@echo "  ./vm_explorer_cpp -t tlb -s 256"
+	@echo "  ./memory_allocator -t all"
+	@echo "  ./memory_allocator_cpp -t container"
 
 help:
 	@echo "Available targets:"
@@ -64,3 +74,5 @@ help:
 	@echo "  lock_visualizer        - Lock contention analysis"
 	@echo "  vm_explorer           - Virtual memory analysis (C)"
 	@echo "  vm_explorer_cpp       - Virtual memory analysis (C++)"
+	@echo "  memory_allocator      - Memory allocator benchmarking (C)"
+	@echo "  memory_allocator_cpp  - Memory allocator benchmarking (C++)"
