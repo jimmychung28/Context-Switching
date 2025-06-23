@@ -7,7 +7,7 @@ CXXFLAGS = -std=c++17 -Wall -Wextra -O2
 LDFLAGS = -lpthread -lm
 
 # Binaries
-BINARIES = context_switch_macos scheduler_analyzer lock_visualizer vm_explorer vm_explorer_cpp memory_allocator memory_allocator_cpp context_switch_cpp scheduler_analyzer_cpp lock_visualizer_cpp cache_analyzer cache_analyzer_cpp disk_io_analyzer disk_io_analyzer_cpp
+BINARIES = context_switch_macos scheduler_analyzer lock_visualizer vm_explorer vm_explorer_cpp memory_allocator memory_allocator_cpp context_switch_cpp scheduler_analyzer_cpp lock_visualizer_cpp cache_analyzer cache_analyzer_cpp disk_io_analyzer disk_io_analyzer_cpp network_io_benchmarker network_io_benchmarker_cpp
 
 .PHONY: all clean
 
@@ -69,6 +69,14 @@ disk_io_analyzer: src/disk_io_analyzer.c
 disk_io_analyzer_cpp: src/disk_io_analyzer_cpp.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $< -pthread
 
+# Network I/O benchmarker (C version)
+network_io_benchmarker: src/network_io_benchmarker.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+
+# Network I/O benchmarker (C++ version)
+network_io_benchmarker_cpp: src/network_io_benchmarker_cpp.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $< -pthread
+
 # Linux-specific context switch measurement
 context_switch: src/Cost\ of\ Context\ Switching.c
 	$(CC) $(CFLAGS) -o $@ "$<" -lrt
@@ -96,6 +104,8 @@ install: all
 	@echo "  ./cache_analyzer_cpp -t hierarchy -v"
 	@echo "  ./disk_io_analyzer -t all -T 4"
 	@echo "  ./disk_io_analyzer_cpp -t pattern -v"
+	@echo "  ./network_io_benchmarker -t all -P tcp"
+	@echo "  ./network_io_benchmarker_cpp -t throughput -v"
 
 help:
 	@echo "Available targets:"
@@ -119,3 +129,5 @@ help:
 	@echo "  cache_analyzer_cpp    - CPU cache performance analysis (C++)"
 	@echo "  disk_io_analyzer      - Disk I/O performance analysis (C)"
 	@echo "  disk_io_analyzer_cpp  - Disk I/O performance analysis (C++)"
+	@echo "  network_io_benchmarker     - Network I/O benchmarking (C)"
+	@echo "  network_io_benchmarker_cpp - Network I/O benchmarking (C++)"
